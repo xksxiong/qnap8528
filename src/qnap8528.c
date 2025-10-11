@@ -28,6 +28,14 @@
  *  v1.3: Changed VPD entries to return an error if BP does not exist
  *		  Changed configuration search logic to support devices with MB code only
  *		  Added configuration for TS-464eU
+ *  v1.9: Added TS-1277XU, TS-877XU, TS-1677XU, TS-2477XU, TS-977XU
+ *  v1.10: Added more configs for TBS-464, TS-262, TS-262C, TS-264, 
+ *		   TS-264C, TS-364, TS-462, TS-462C, TS-464, TS-564, TS-664
+ *  v1.11: Added more configs for TS-253A, TS-453A, TBS-453A, TS-853A, 
+ *         TS-453MINI II, TS-653A, TS-553AS
+ *  v1.12: Added TVS-473e, TVS-673e, TVS-873e support
+ *  v1.13: Changed mappings of HDD leds for added devices in v1.12
+ *  v1.14: Fixed label at end of compound statement for GCC 10
  */
 
 #include <linux/delay.h>
@@ -1068,6 +1076,7 @@ static umode_t qnap8528_hwmon_is_visible(const void *data, enum hwmon_sensor_typ
 			}
 		}
 	default:
+		;
 	}
 	return mode;
 }
@@ -1085,6 +1094,7 @@ static int qnap8528_hwmon_read(struct device *dev, enum hwmon_sensor_types type,
 		*val = qnap8528_fan_pwm_get(channel);
 		return 0;
 	default:
+		;
 	}
 	return -ENOTSUPP;
 }
@@ -1244,7 +1254,7 @@ qnap8528_init_ret:
 
 MODULE_AUTHOR("0xGiddi <qnap8528@giddi.net>");
 MODULE_DESCRIPTION("QNAP IT8528 EC driver");
-MODULE_VERSION("1.8");
+MODULE_VERSION("1.14");
 MODULE_LICENSE("GPL");
 
 module_init(qnap8528_init);

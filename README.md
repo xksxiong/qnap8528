@@ -90,8 +90,8 @@ sudo ./build.sh
   - [Installing on TrueNAS Scale](#installing-on-truenas-scale)
     - [Install Procedure](#install-procedure)
     - [Uninstall procedure](#uninstall-procedure)
-  - [Installing on fnOS (Feiniu OS / 飞牛 OS)](#installing-on-fnos-feiniu-os--%E9%A3%9E%E7%89%9B-os)
-  - [Autoload module on startup with modprobe](#autoload-module-on-startup-with-modprobe)
+  - [Installing on fnOS (Feiniu OS / 飞牛 OS)](#installing-on-fnos-feiniu-os--飞牛-os)
+  - [Autoload module on startup with Modprobe](#autoload-module-on-startup-with-modprobe)
   - [Autoload module on startup with Systemd](#autoload-module-on-startup-with-systemd)
   - [Removing the module](#removing-the-module)
 - [How to use this module](#how-to-use-this-module)
@@ -354,7 +354,11 @@ Some devices (such as the *TS-473A*) blink the green disk slot LED to indicate t
 
 The following table lists all devices that have a valid configuration in the module and should
 work out-of-the-box. If you cannot find your model here, it either does not yet have a configuration entry
-or does not use the IT8528 chip. Please check the Q&A for more information.
+or does not use the IT8528 chip. Please check the Q&A for more information. 
+
+Note that some models that have "extra letters" these extra letters are not listed in this list
+under the model name column if they are not reflected in the configuration under `MODEL_NAME` or `DISPLAY_FIXED_MODEL_NAME`,
+the driver may still work fine detecting it as the base model without the extra letters. 
 
 |Model Name|MB Code|BP Code|Disk LEDs|Notes
 |-|-|-|-|-|
@@ -455,10 +459,57 @@ TS-1264U|Q08R0|Q08X0|12/12 | ⚠️ See *2
 |TS-453BE|QY472|QY580|4/4 | ⚠️ See 2
 |TS-653B|QY471|QY590|6/6 | ⚠️ See 2
 |TS-253B|QY470|QY570|2/2 |
+|TS-1277XU|QZ490|QZ550|12/12 |
+|TS-1277XU|QZ492|QZ550|12/12 |
+|TS-1277XU|QZ492|QZ552|12/12 |
+|TS-1277XU|QZ493|QZ550|12/12 |
+|TS-1277XU|QZ494|QZ550|12/12 |
+|TS-1677XU|QZ491|QZ540|16/16 |
+|TS-1677XU|QZ492|QZ540|16/16 |
+|TS-1677XU|QZ494|QZ540|16/16 |
+|TS-2477XU|QZ500|Q0070|24/24 |
+|TS-2477XU|QZ502|Q0070|24/24 |
+|TS-2477XU|QZ503|Q0070|24/24 |
+|TS-2477XU|QZ504|Q0070|24/24 |
+|TS-877XU|QZ490|QZ551|8/8 |
+|TS-877XU|QZ490|QZ560|8/8 |
+|TS-877XU|QZ492|QZ551|8/8 |
+|TS-877XU|QZ493|QZ551|8/8 |
+|TS-877XU|QZ494|QZ551|8/8 |
+|TS-977XU|QZ480|Q0060|9/9 |
+|TS-977XU|QZ481|Q0060|9/9 |
+|TS-977XU|QZ482|Q0060|9/9 |
+|TBS-464|Q07X0|N/A|4/4 |
+|TS-664|Q07R2|Q07S0|6/8 | ⚠️ See *1 ⚠️ See 2
+|TS-664|Q07R7|Q07S0|6/8 | ⚠️ See *1 ⚠️ See 2
+|TS-564|SAQ10|SBP90|5/5 | ⚠️ See 2
+|TS-464|Q07R6|Q08F0|4/6 | ⚠️ See *1 ⚠️ See 2
+|TS-462C|SAQ92|SBR00|4/4 | ⚠️ See 2
+|TS-462|Q07R4|Q08F0|4/6 | ⚠️ See *1 ⚠️ See 2
+|TS-364|Q08E0|Q08T0|5/5 |
+|TS-264C|SAQ91|SBQ10|4/4 |
+|TS-264|Q07R5|Q09N0|2/4 | ⚠️ See *1
+|TS-264|Q07R0|Q09N0|2/4 | ⚠️ See *1
+|TS-262C|SAQ90|SBQ10|2/2 |
+|TS-262|Q07R3|Q09N0|2/4 | ⚠️ See *1
+|TS-453A|QX850|QX670|4/4 | ⚠️ See *4
+|TS-853A|QX470|QX520|8/8 |
+|TS-253A|QX960|QY010|2/2 |
+|TBS-453A|QX910|N/A|4/4 |
+|TS-453MINI II|QX580|N/A|4/4 |
+|TS-653A|QX470|QX660|6/6 |
+|TS-453A|QX471|QX670|4/4 |
+|TS-553AS|QX370|N/A|5/5 |
+|TVS-473e|QY030|QY040|6/6 | ⚠️ See *5
+|TVS-873e|QY030|QY060|10/10 |
+|TVS-673e|QY030|QY050|8/8 |
+
 
 *1 Some or all disks LEDs are managed by other hardware (not the EC), if the model is missing 2 disks (e.g `8/10`), it's most likely the internal M.2/NVME ports that do not have an LED associated with them.\
 *2 Some or all of the disks do not have a present or error (green/red) LED.\
-*3 This device config file contains a 3rd code number which is not checked or tested. Might hint at use of VPD table 3 and 4?
+*3 This device config file contains a 3rd code number which is not checked or tested. Might hint at use of VPD table 3 and 4? \
+*4 Device serial number can be either located in MB VPD or network card. \
+*5 This model has 4 different configuration options (4/6 disks, 1/2 fans, partial disk blinking, CPU temp reported by EC or DTS and serial number reported from NET and VPD) due to them all having the same hardware IDs, the config in qnap8528 module supports 6 disks, 2 fans and no blinking of disk LEDs. Note that of hardware that does not have support for the 2 extra M.2 and only have a single fan there will be pseudo LEDs and a fan created. 
 
 ## Question and Answers
 
